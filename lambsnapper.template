@@ -25,6 +25,10 @@
         "Product" : {
             "Description": "The name of the S3 Key like \"folder/file.zip\"",
             "Type": "String"
+        },
+        "Retention" : {
+            "Description": "The number of days you will keep the snapshots.",
+            "Type": "String"
         }
     },
 
@@ -66,7 +70,10 @@
           						"Effect": "Allow",
           						"Action": [ 
           							"ec2:CreateSnapshot",
-          							"ec2:CreateTags"
+          							"ec2:CreateTags",
+                        "ec2:DeleteSnapshot",
+                        "ec2:ModifySnapshotAttribute",
+                        "ec2:ResetSnapshotAttribute"
           						],
           						"Resource": "*"
         				    }
@@ -120,6 +127,7 @@
       					"{",
       					" \"Region\": \"", { "Ref" : "AWS::Region" }, "\", ",
       					" \"Product\": \"", { "Ref" : "Product" }, "\", ",
+                " \"Retention\": \"", { "Ref" : "Retention" }, "\", ",
                 " \"Period\": \"Daily\" ",
       					"}"
       				]]}
@@ -143,6 +151,7 @@
                 "{",
                 " \"Region\": \"", { "Ref" : "AWS::Region" }, "\", ",
                 " \"Product\": \"", { "Ref" : "Product" }, "\", ",
+                " \"Retention\": \"", { "Ref" : "Retention" }, "\", ",
                 " \"Period\": \"Monthly\" ",
                 "}"
               ]]}
