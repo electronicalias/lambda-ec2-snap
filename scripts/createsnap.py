@@ -34,7 +34,6 @@ def lambda_handler(event, context):
     def create_snap(vol_id):
         data = ec2.create_snapshot(
             VolumeId=vol_id,
-            Description='This is a test'
         )
         return data['SnapshotId']
     
