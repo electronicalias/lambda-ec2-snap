@@ -1,20 +1,30 @@
 import boto3
 import logging
-import datetime
 import collections
-from datetime import datetime
+import datetime
 
 logging.getLogger().setLevel(logging.DEBUG)
 
 
 def lambda_handler(event, context):
 
-    dtstamp = datetime.today()
-    dstamp = dtstamp.date()
+    dstamp = datetime.date.today()
+
 
     pname = event['Product']
     rname = event['Region']
-    period = event['Period']
+    period = event['Period']    
+    retention = int(event['Retention']) 
+
+    if 'Daily' in period:
+        retention_days = retention * 1
+        print retention_days
+    elif 'Weekly' in period:
+        retention_days = retention * 7
+        print retention_days
+    elif 'Monthly' in period:
+        retention_days = retention * 31
+        print retention_days
     
     ec2 = boto3.client('ec2', rname)
     ecsnap = boto3.resource('ec2', rname)
@@ -39,7 +49,7 @@ def lambda_handler(event, context):
                     'Value': str(dstamp) + '-' + period + '-' + instance_id
                 },
                 {
-                    'Key': 'Date',
+                    'Key': 'CreatedOn',
                     'Value': str(dstamp)
                 },
                 {
@@ -76,13 +86,6 @@ def lambda_handler(event, context):
         ], [])
 
     for instance in instances:
-
-        try:
-            retention_days = [
-                int(t.get('Value')) for t in instance['Tags']
-                if t['Key'] == 'Retention'][0]
-        except IndexError:
-            retention_days = 7
 
         for dev in instance['BlockDeviceMappings']:
             Name = dev['DeviceName']
